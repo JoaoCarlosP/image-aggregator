@@ -291,10 +291,12 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, loading }) => {
             onToggle={toggleAdvanced} 
           />
           
-          <SearchButton 
-            loading={loading} 
-            disabled={isSearchDisabled} 
-          />
+          <div className="w-full sm:w-auto">
+            <SearchButton 
+              loading={loading} 
+              disabled={isSearchDisabled} 
+            />
+          </div>
         </div>
 
         {showAdvanced && (

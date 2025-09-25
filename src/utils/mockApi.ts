@@ -1,147 +1,209 @@
-import { ImageResult } from '../types';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ImageResult, SearchFilters } from '../types'
 
-export const pexelImages = async (query: string) => {
-  
+/**
+ * Busca imagens na API do Pexels
+ */
+export const pexelImages = async (query: string, page: number = 1): Promise<ImageResult[]> => {
   try {
     const response = await fetch(
-      `https://api.pexels.com/v1/search?query=${query}&per_page=15&page=1`,
-      { headers: { Authorization: import.meta.env.VITE_PEXELS_KEY ?? '' } }
-    );
+      `https://api.pexels.com/v1/search?query=${query}&per_page=15&page=${page}`,
+      { 
+        headers: { 
+          Authorization: import.meta.env.VITE_PEXELS_KEY ?? '' 
+        } 
+      }
+    )
 
     if (!response.ok) {
-      throw new Error(`Erro na API: ${response.statusText}`);
+      throw new Error(`Erro na API Pexels: ${response.statusText}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
 
-    const pexelImagesList = data.photos?.map((photo: any) => ({
+    return data.photos?.map((photo: any) => ({
       src: photo.src.medium,
-      id: photo.src.medium,
-      sourceName: 'Daniel',
-      sourceColor: '',
-      title: photo.src.medium,
-      photographer: 'BISPO DANIEL'
-    })) || [];
-
-    return pexelImagesList;
+      id: `pexels-${photo.id}`,
+      sourceName: 'Pexels',
+      sourceColor: 'bg-green-500',
+      title: photo.alt || `Imagem de ${query}`,
+      photographer: photo.photographer || 'Pexels'
+    })) || []
+    
   } catch (error) {
-    console.error("Erro ao buscar imagens:", error);
-    return [];
+    console.error("Erro ao buscar imagens no Pexels:", error)
+    return []
   }
-};
+}
 
-export const pixabayImages = async (query: string) => {
-  
+/**
+ * Busca imagens na API do Pixabay
+ */
+export const pixabayImages = async (query: string, page: number = 1): Promise<ImageResult[]> => {
   try {
     const response = await fetch(
-      `https://pixabay.com/api/?key=${import.meta.env.VITE_PIXABAY_KEY}&q=${query}`,
-    );
+      `https://pixabay.com/api/?key=${import.meta.env.VITE_PIXABAY_KEY}&q=${query}&page=${page}&per_page=15`
+    )
 
     if (!response.ok) {
-      throw new Error(`Erro na API: ${response.statusText}`);
+      throw new Error(`Erro na API Pixabay: ${response.statusText}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
 
-    const pexelImagesList = data.hits?.map((photo: any) => ({
+    return data.hits?.map((photo: any) => ({
       src: photo.webformatURL,
-      id: photo.id,
-      sourceName: 'pixabay',
-      sourceColor: '',
-      title: '',
-      photographer: photo.user
-    })) || [];
-
-    return pexelImagesList;
+      id: `pixabay-${photo.id}`,
+      sourceName: 'Pixabay',
+      sourceColor: 'bg-orange-500',
+      title: photo.tags || `Imagem de ${query}`,
+      photographer: photo.user || 'Pixabay'
+    })) || []
+    
   } catch (error) {
-    console.error("Erro ao buscar imagens:", error);
-    return [];
+    console.error("Erro ao buscar imagens no Pixabay:", error)
+    return []
   }
-};
+}
 
-export const unsplashImages = async (query: string) => {
-  
+/**
+ * Busca imagens na API do Unsplash
+ */
+export const unsplashImages = async (query: string, page: number = 1): Promise<ImageResult[]> => {
   try {
     const response = await fetch(
-      `https://api.unsplash.com/search/photos?query=${query}`,
-      { headers: { Authorization: `Client-ID ${import.meta.env.VITE_UNSPLASH_KEY ?? ''}` } }
-    );
+      `https://api.unsplash.com/search/photos?query=${query}&page=${page}&per_page=15`,
+      { 
+        headers: { 
+          Authorization: `Client-ID ${import.meta.env.VITE_UNSPLASH_KEY ?? ''}` 
+        } 
+      }
+    )
 
     if (!response.ok) {
-      throw new Error(`Erro na API: ${response.statusText}`);
+      throw new Error(`Erro na API Unsplash: ${response.statusText}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
 
-    const pexelImagesList = data.results?.map((photo: any) => ({
+    return data.results?.map((photo: any) => ({
       src: photo.urls.regular,
-      id: photo.id,
-      sourceName: 'unsplash',
-      sourceColor: '',
-      title: photo.alternative_slugs.pt,
-      photographer: photo.user.name 
-    })) || [];
-
-    return pexelImagesList;
+      id: `unsplash-${photo.id}`,
+      sourceName: 'Unsplash',
+      sourceColor: 'bg-blue-500',
+      title: photo.alt_description || photo.description || `Imagem de ${query}`,
+      photographer: photo.user?.name || 'Unsplash'
+    })) || []
+    
   } catch (error) {
-    console.error("Erro ao buscar imagens:", error);
-    return [];
+    console.error("Erro ao buscar imagens no Unsplash:", error)
+    return []
   }
-};
+}
 
-const SOURCES = [
-  { name: 'Pexels', color: 'bg-green-500' },
-  { name: 'Unsplash', color: 'bg-blue-500' },
-  { name: 'Pixabay', color: 'bg-orange-500' },
-];
-
-const PHOTOGRAPHERS = [
-  'John Doe', 'Jane Smith', 'Alex Johnson', 'Maria Garcia', 
-  'David Wilson', 'Sarah Brown', 'Michael Davis', 'Emma Taylor'
-];
-
-const PEXELS_IMAGES = [];
-
+/**
+ * Função principal que busca imagens de múltiplas fontes
+ * baseada nos filtros selecionados
+ */
 export const fetchImages = async (
-  query: string, 
+  query: string,
   page: number = 1,
-  filters?: { style?: string; orientation?: string; color?: string; sources?: string[] }
-): Promise<{ results: ImageResult[]; hasMore: boolean }> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-
-  const startIndex = (page - 1) * 9;
-  const endIndex = startIndex + 9;
+  filters?: SearchFilters
+): Promise<{ results: ImageResult[], hasMore: boolean }> => {
   
-  const results: ImageResult[] = PEXELS_IMAGES.slice(startIndex, endIndex).map((src, index) => {
-    // Filter sources based on user selection
-    const availableSources = filters?.sources && filters?.sources?.length > 0 
-      ? SOURCES.filter(source => {
-          const sourceMap: { [key: string]: string } = {
-            'pexels': 'Pexels',
-            'unsplash': 'Unsplash', 
-            'pixabay': 'Pixabay'
-          };
-          return filters.sources!.includes(Object.keys(sourceMap).find(key => sourceMap[key] === source.name) || '');
-        })
-      : SOURCES;
-    
-    const source = availableSources[Math.floor(Math.random() * availableSources?.length)];
-    const photographer = PHOTOGRAPHERS[Math.floor(Math.random() * PHOTOGRAPHERS?.length)];
-    
-    return {
-      id: `${page}-${index}`,
-      src,
-      sourceName: source.name,
-      sourceColor: source.color,
-      title: `${query} Image ${startIndex + index + 1}`,
-      photographer
-    };
-  });
+  // Define quais sources usar (padrão: todas)
+  const selectedSources = filters?.sources && filters.sources.length > 0 
+    ? filters.sources 
+    : ['pexels', 'pixabay', 'unsplash']
 
-  return {
-    results,
-    hasMore: endIndex < PEXELS_IMAGES?.length,
-    total: PEXELS_IMAGES?.length
-  };
-};
+  // Cria promises para todas as APIs selecionadas
+  const apiPromises = selectedSources.map(async (source) => {
+    const apiConfig = API_CONFIG[source as keyof typeof API_CONFIG]
+    if (apiConfig) {
+      return await apiConfig.fetcher(query, page)
+    }
+    return []
+  })
+
+  try {
+    // Executa todas as requisições em paralelo
+    const apiResults = await Promise.allSettled(apiPromises)
+    
+    // Processa os resultados, ignorando erros
+    const allImages: ImageResult[] = []
+    
+    apiResults.forEach((result) => {
+      if (result.status === 'fulfilled') {
+        allImages.push(...result.value)
+      }
+    })
+
+    // Embaralha os resultados para misturar as fontes
+    const shuffledImages = shuffleArray(allImages)
+
+    // Para paginação, assumimos que há mais resultados se pelo menos uma API retornou dados
+    const hasMore = allImages.length > 0
+
+    return {
+      results: shuffledImages,
+      hasMore
+    }
+    
+  } catch (error) {
+    console.error('Erro ao buscar imagens:', error)
+    return {
+      results: [],
+      hasMore: false
+    }
+  }
+}
+
+/**
+ * Função auxiliar para embaralhar um array (Fisher-Yates shuffle)
+ */
+const shuffleArray = <T>(array: T[]): T[] => {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
+// Mapeamento de APIs para facilitar a busca
+const API_CONFIG = {
+  pexels: {
+    name: 'Pexels',
+    color: 'bg-green-500',
+    fetcher: pexelImages
+  },
+  pixabay: {
+    name: 'Pixabay', 
+    color: 'bg-orange-500',
+    fetcher: pixabayImages
+  },
+  unsplash: {
+    name: 'Unsplash',
+    color: 'bg-blue-500', 
+    fetcher: unsplashImages
+  }
+}
+
+/**
+ * Função específica para busca inicial (primeira página)
+ */
+export const searchImages = async (filters: SearchFilters): Promise<ImageResult[]> => {
+  const response = await fetchImages(filters.query, 1, filters)
+  return response.results
+}
+
+/**
+ * Função para carregar mais resultados (páginas seguintes)
+ */
+export const loadMoreImages = async (
+  query: string,
+  page: number,
+  filters?: SearchFilters
+): Promise<{ results: ImageResult[], hasMore: boolean }> => {
+  return await fetchImages(query, page, filters)
+}

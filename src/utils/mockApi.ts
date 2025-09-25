@@ -1,34 +1,93 @@
 import { ImageResult } from '../types';
 
-const PEXELS_IMAGES = [
-  'https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1133957/pexels-photo-1133957.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1486974/pexels-photo-1486974.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1438761/pexels-photo-1438761.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1367192/pexels-photo-1367192.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1229042/pexels-photo-1229042.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1525041/pexels-photo-1525041.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1591373/pexels-photo-1591373.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/3571551/pexels-photo-3571551.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/2422915/pexels-photo-2422915.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1624496/pexels-photo-1624496.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1366919/pexels-photo-1366919.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1624438/pexels-photo-1624438.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1366630/pexels-photo-1366630.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1323712/pexels-photo-1323712.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1624895/pexels-photo-1624895.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1366957/pexels-photo-1366957.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1323592/pexels-photo-1323592.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1624504/pexels-photo-1624504.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1366942/pexels-photo-1366942.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1323585/pexels-photo-1323585.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1624511/pexels-photo-1624511.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1366934/pexels-photo-1366934.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'https://images.pexels.com/photos/1323578/pexels-photo-1323578.jpeg?auto=compress&cs=tinysrgb&w=800'
-];
+export const pexelImages = async (query: string) => {
+  
+  try {
+    const response = await fetch(
+      `https://api.pexels.com/v1/search?query=${query}&per_page=15&page=1`,
+      { headers: { Authorization: import.meta.env.VITE_PEXELS_KEY ?? '' } }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Erro na API: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    const pexelImagesList = data.photos?.map((photo: any) => ({
+      src: photo.src.medium,
+      id: photo.src.medium,
+      sourceName: 'Daniel',
+      sourceColor: '',
+      title: photo.src.medium,
+      photographer: 'BISPO DANIEL'
+    })) || [];
+
+    return pexelImagesList;
+  } catch (error) {
+    console.error("Erro ao buscar imagens:", error);
+    return [];
+  }
+};
+
+export const pixabayImages = async (query: string) => {
+  
+  try {
+    const response = await fetch(
+      `https://pixabay.com/api/?key=${import.meta.env.VITE_PIXABAY_KEY}&q=${query}`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`Erro na API: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    const pexelImagesList = data.hits?.map((photo: any) => ({
+      src: photo.webformatURL,
+      id: photo.id,
+      sourceName: 'pixabay',
+      sourceColor: '',
+      title: '',
+      photographer: photo.user
+    })) || [];
+
+    return pexelImagesList;
+  } catch (error) {
+    console.error("Erro ao buscar imagens:", error);
+    return [];
+  }
+};
+
+export const unsplashImages = async (query: string) => {
+  
+  try {
+    const response = await fetch(
+      `https://api.unsplash.com/search/photos?query=${query}`,
+      { headers: { Authorization: `Client-ID ${import.meta.env.VITE_UNSPLASH_KEY ?? ''}` } }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Erro na API: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    const pexelImagesList = data.results?.map((photo: any) => ({
+      src: photo.urls.regular,
+      id: photo.id,
+      sourceName: 'unsplash',
+      sourceColor: '',
+      title: photo.alternative_slugs.pt,
+      photographer: photo.user.name 
+    })) || [];
+
+    return pexelImagesList;
+  } catch (error) {
+    console.error("Erro ao buscar imagens:", error);
+    return [];
+  }
+};
 
 const SOURCES = [
   { name: 'Pexels', color: 'bg-green-500' },
@@ -40,6 +99,8 @@ const PHOTOGRAPHERS = [
   'John Doe', 'Jane Smith', 'Alex Johnson', 'Maria Garcia', 
   'David Wilson', 'Sarah Brown', 'Michael Davis', 'Emma Taylor'
 ];
+
+const PEXELS_IMAGES = [];
 
 export const fetchImages = async (
   query: string, 
@@ -54,7 +115,7 @@ export const fetchImages = async (
   
   const results: ImageResult[] = PEXELS_IMAGES.slice(startIndex, endIndex).map((src, index) => {
     // Filter sources based on user selection
-    const availableSources = filters?.sources && filters.sources.length > 0 
+    const availableSources = filters?.sources && filters?.sources?.length > 0 
       ? SOURCES.filter(source => {
           const sourceMap: { [key: string]: string } = {
             'pexels': 'Pexels',
@@ -65,8 +126,8 @@ export const fetchImages = async (
         })
       : SOURCES;
     
-    const source = availableSources[Math.floor(Math.random() * availableSources.length)];
-    const photographer = PHOTOGRAPHERS[Math.floor(Math.random() * PHOTOGRAPHERS.length)];
+    const source = availableSources[Math.floor(Math.random() * availableSources?.length)];
+    const photographer = PHOTOGRAPHERS[Math.floor(Math.random() * PHOTOGRAPHERS?.length)];
     
     return {
       id: `${page}-${index}`,
@@ -80,6 +141,7 @@ export const fetchImages = async (
 
   return {
     results,
-    hasMore: endIndex < PEXELS_IMAGES.length
+    hasMore: endIndex < PEXELS_IMAGES?.length,
+    total: PEXELS_IMAGES?.length
   };
 };

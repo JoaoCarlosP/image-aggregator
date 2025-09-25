@@ -113,6 +113,14 @@ export const fetchImages = async (
   
   const results: ImageResult[] = PEXELS_IMAGES.slice(startIndex, endIndex).map((src, index) => {
     // Filter sources based on user selection
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 800));
+
+  const startIndex = (page - 1) * 9;
+  const endIndex = startIndex + 9;
+  
+  const results: ImageResult[] = PEXELS_IMAGES.slice(startIndex, endIndex).map((src, index) => {
+    // Filter sources based on user selection
     const availableSources = filters?.sources && filters?.sources?.length > 0 
       ? SOURCES.filter(source => {
           const sourceMap: { [key: string]: string } = {
@@ -139,6 +147,7 @@ export const fetchImages = async (
 
   return {
     results,
-    hasMore: endIndex < PEXELS_IMAGES?.length
+    hasMore: endIndex < PEXELS_IMAGES?.length,
+    total: PEXELS_IMAGES?.length
   };
 };

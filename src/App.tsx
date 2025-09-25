@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import Header from './components/Header';
 import SearchForm from './components/SearchForm';
 import ImageGrid from './components/ImageGrid';
-import { fetchImages } from './utils/mockApi';
-import { SearchFilters, SearchState, ImageResult } from './types';
+import { fetchImages, pexelImages, pixabayImages, unsplashImages } from './utils/mockApi';
+import { SearchFilters, SearchState  } from './types';
 
 function App() {
   const [searchState, setSearchState] = useState<SearchState>({
@@ -17,24 +17,20 @@ function App() {
   const [totalResults, setTotalResults] = useState<number>(0);
 
   const handleSearch = async (filters: SearchFilters) => {
+    console.log('TESTE')
     setSearchState(prev => ({ ...prev, loading: true }));
     setCurrentQuery(filters);
 
     try {
-      const response = await fetchImages(filters.query, 1, {
-        style: filters.style,
-        orientation: filters.orientation,
-        color: filters.color,
-        sources: filters.sources
-      });
-
+      const response = await unsplashImages(filters.query);
+      console.log(response)
       setSearchState({
-        results: response.results,
+        results: response,
         loading: false,
         hasMore: response.hasMore,
         page: 1
       });
-      setTotalResults(response.results.length);
+      setTotalResults(response?.length);
     } catch (error) {
       console.error('Search failed:', error);
       setSearchState(prev => ({ 

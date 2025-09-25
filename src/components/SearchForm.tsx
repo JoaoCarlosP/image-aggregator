@@ -176,7 +176,7 @@ const SearchButton: React.FC<SearchButtonProps> = ({ loading, disabled }) => (
   <button
     type="submit"
     disabled={disabled}
-    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 text-white px-8 py-3 rounded-xl font-medium transition-all duration-200 disabled:cursor-not-allowed flex items-center space-x-2"
+    className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 text-white px-8 py-3 rounded-xl font-medium transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
   >
     {loading ? (
       <>

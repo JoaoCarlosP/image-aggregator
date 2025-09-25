@@ -64,7 +64,7 @@ export const unsplashImages = async (query: string) => {
   try {
     const response = await fetch(
       `https://api.unsplash.com/search/photos?query=${query}`,
-      { headers: { Authorization: `Client-ID ${import.meta.env.VITE_UNSPLASH_KEY ?? ''}`  } }
+      { headers: { Authorization: `Client-ID ${import.meta.env.VITE_UNSPLASH_KEY ?? ''}` } }
     );
 
     if (!response.ok) {
@@ -100,19 +100,13 @@ const PHOTOGRAPHERS = [
   'David Wilson', 'Sarah Brown', 'Michael Davis', 'Emma Taylor'
 ];
 
+const PEXELS_IMAGES = [];
+
 export const fetchImages = async (
   query: string, 
   page: number = 1,
   filters?: { style?: string; orientation?: string; color?: string; sources?: string[] }
 ): Promise<{ results: ImageResult[]; hasMore: boolean }> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-
-  const startIndex = (page - 1) * 9;
-  const endIndex = startIndex + 9;
-  
-  const results: ImageResult[] = PEXELS_IMAGES.slice(startIndex, endIndex).map((src, index) => {
-    // Filter sources based on user selection
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 800));
 

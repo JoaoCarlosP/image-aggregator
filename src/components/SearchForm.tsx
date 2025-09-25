@@ -285,7 +285,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, loading }) => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <SearchInput value={query} onChange={setQuery} />
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <AdvancedToggle 
             showAdvanced={showAdvanced} 
             onToggle={toggleAdvanced} 

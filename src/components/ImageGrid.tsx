@@ -28,9 +28,9 @@ const ImageGrid: React.FC<ImageGridProps> = ({
   return (
     <div className="space-y-8">
       {/* Masonry Grid */}
-      <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-0">
+      <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6 space-y-0">
         {images.map((image) => (
-          <div key={image.id} className="break-inside-avoid mb-6">
+          <div key={image.id} className="break-inside-avoid mb-4 sm:mb-6">
             <ImageCard image={image} />
           </div>
         ))}
@@ -42,7 +42,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({
           <button
             onClick={onLoadMore}
             disabled={loading}
-            className="bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-gray-300 text-gray-700 px-8 py-4 rounded-2xl font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 flex items-center space-x-3 shadow-sm hover:shadow-md"
+            className="bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-gray-300 text-gray-700 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 flex items-center space-x-3 shadow-sm hover:shadow-md text-sm sm:text-base"
           >
             {loading ? (
               <>
